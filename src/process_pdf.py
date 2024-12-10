@@ -75,7 +75,7 @@ def update_table_sum(
 
     # check bounding box
     if bbox.left == bbox.right or bbox.top == bbox.bottom:
-        print("[" + img + "] image found but no BBox attribute was set")
+        print("[" + img + "] table found but no BBox attribute was set")
         return
 
     # get the object page number (it may be written in child objects)
