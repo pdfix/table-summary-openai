@@ -55,11 +55,30 @@ def render_page(doc: PdfDoc, page_num: int, bbox: PdfRect, zoom: float) -> bytea
     return data
 
 
+def get_page_number_from_elem(elem: PdsStructElement, doc: PdfDoc) -> int:
+    page_num = elem.GetPageNumber(0)
+    if page_num != -1:
+        return page_num
+
+    for i in range(elem.GetNumChildren()):
+        child_dict = elem.GetChildObject(i)
+        child_elem = doc.GetStructTree().GetStructElementFromObject(child_dict)
+
+        for j in range(child_elem.GetNumChildren()):
+            page_num = child_elem.GetChildPageNumber(j)
+            if page_num != -1:
+                return page_num
+    return -1
+
+
 def update_table_sum(
-    elem: PdsStructElement, doc: PdfDoc, api_key: str, overwrite: bool, lang: str
+    elem: PdsStructElement,
+    doc: PdfDoc,
+    api_key: str,
+    overwrite: bool,
+    lang: str,
 ) -> None:
     img = "image_" + str(elem.GetObject().GetId()) + ".jpg"
-
     # get image bbox from attributes
     bbox = PdfRect()
     for i in range(0, elem.GetNumAttrObjects()):
@@ -79,12 +98,7 @@ def update_table_sum(
         return
 
     # get the object page number (it may be written in child objects)
-    page_num = elem.GetPageNumber(0)
-    if page_num == -1:
-        for i in range(0, elem.GetNumChildren()):
-            page_num = elem.GetChildPageNumber(i)
-            if page_num != -1:
-                break
+    page_num = get_page_number_from_elem(elem, doc)
     if page_num == -1:
         print("[" + img + "] table found but can't determine the page number")
         return
