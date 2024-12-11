@@ -21,12 +21,12 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 
 # Copy the source code and requirements.txt into the container
-COPY src/ /usr/tab-sum-openai/src/
 COPY requirements.txt /usr/tab-sum-openai/
 COPY config.json /usr/tab-sum-openai/
 
 
 RUN pip install --no-cache-dir -r requirements.txt 
 
+COPY src/ /usr/tab-sum-openai/src/
 
 ENTRYPOINT ["/usr/tab-sum-openai/venv/bin/python3", "/usr/tab-sum-openai/src/main.py"]
