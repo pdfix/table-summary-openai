@@ -1,7 +1,7 @@
 import ctypes
 import re
 
-from pdfixsdk.Pdfix import (
+from pdfixsdk import (
     GetPdfix,
     PdfDoc,
     PdfImageParams,
@@ -55,22 +55,6 @@ def render_page(doc: PdfDoc, page_num: int, bbox: PdfRect, zoom: float) -> bytea
     return data
 
 
-def get_page_number_from_elem(elem: PdsStructElement, doc: PdfDoc) -> int:
-    page_num = elem.GetPageNumber(0)
-    if page_num != -1:
-        return page_num
-
-    for i in range(elem.GetNumChildren()):
-        child_dict = elem.GetChildObject(i)
-        child_elem = doc.GetStructTree().GetStructElementFromObject(child_dict)
-
-        for j in range(child_elem.GetNumChildren()):
-            page_num = child_elem.GetChildPageNumber(j)
-            if page_num != -1:
-                return page_num
-    return -1
-
-
 def update_table_sum(
     elem: PdsStructElement,
     doc: PdfDoc,
@@ -78,29 +62,24 @@ def update_table_sum(
     overwrite: bool,
     lang: str,
 ) -> None:
-    img = "image_" + str(elem.GetObject().GetId()) + ".jpg"
-    # get image bbox from attributes
-    bbox = PdfRect()
-    for i in range(0, elem.GetNumAttrObjects()):
-        attr = PdsDictionary(elem.GetAttrObject(i).obj)
-        arr = attr.GetArray("BBox")
-        if not arr:
-            continue
-        bbox.left = arr.GetNumber(0)
-        bbox.bottom = arr.GetNumber(1)
-        bbox.right = arr.GetNumber(2)
-        bbox.top = arr.GetNumber(3)
-        break
+    img = "table_" + str(elem.GetObject().GetId()) + ".jpg"
+    print("[" + img + "] table found with an id " + img)
 
+    # get the object page number (it may be written in child objects)
+    pages = elem.GetNumPages()
+    if (pages == 0):
+        print("[" + img + "] table found but can't determine the page number")
+        return
+
+    page_num = elem.GetPageNumber(0)
+    if page_num == -1:
+        print("[" + img + "] unable to retrieve the page number from tag")
+        return
+    
+    bbox = elem.GetBBox(page_num)
     # check bounding box
     if bbox.left == bbox.right or bbox.top == bbox.bottom:
         print("[" + img + "] table found but no BBox attribute was set")
-        return
-
-    # get the object page number (it may be written in child objects)
-    page_num = get_page_number_from_elem(elem, doc)
-    if page_num == -1:
-        print("[" + img + "] table found but can't determine the page number")
         return
 
     data = render_page(doc, page_num, bbox, 1)

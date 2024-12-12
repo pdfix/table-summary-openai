@@ -60,8 +60,8 @@ def main():
     pars_detect.add_argument(
         "--tags",
         type=str,
-        required=True,
-        default="Figure",
+        required=False,
+        default="Table",
         help="Regular expression defining the tag name",
     )
     pars_detect.add_argument(
@@ -74,8 +74,8 @@ def main():
         "--lang",
         type=str,
         required=False,
-        default="en",
-        help="Table summary laguage",
+        default="English",
+        help="Laguage",
     )
 
     try:
