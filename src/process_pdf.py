@@ -95,7 +95,6 @@ def update_table_sum(
         print("[" + img + "] no summary generated")
         return
 
-    attr_set = False
     attr_dict = None
     for index in reversed(range(elem.GetNumAttrObjects())):
         attr_obj = elem.GetAttrObject(index)
@@ -108,11 +107,14 @@ def update_table_sum(
 
     if not attr_dict:
         attr_dict = doc.CreateDictObject(False)
+        attr_dict.PutName("O", "Table")
+        elem.AddAttrObj(attr_dict)
 
     old_summary = attr_dict.GetText("Summary")
     if overwrite or not old_summary:
         print("[" + img + "] summary attribute updated")
         attr_dict.PutString("Summary", summary)
+
 
 
 
