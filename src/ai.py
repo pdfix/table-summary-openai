@@ -26,7 +26,7 @@ def table_summary(img_path: str, api_key: str, lang: str):
                 "content": [
                     {
                         "type": "text",
-                        "text": f"Generate summary for the table in {lang} language. Do not output any other text except for generated summaty. If you can't generate any result return just empty string.",
+                        "text": f"Generate summary for the table in {lang} language. Do not output any other text except for generated summaty. If you can't generate any result return just empty string. Use plain text, no markdown format.",
                     },
                     {
                         "type": "image_url",

@@ -1,13 +1,13 @@
 {
   "actions": [
     {
-      "name": "Table Summary Generator OpenAI",
+      "name": "Table Summary Generator with OpenAI",
       "desc": "A Docker image that automatically generates and applies table summary to PDF files using PDFix SDK and OpenAI",
       "version": {
         "major": 1,
         "minor": 0
       },
-      "icon": "add_table_summary",
+      "icon": "table_view",
       "category": "Tags",
       "configurations": [
         {

@@ -89,12 +89,31 @@ def update_table_sum(
     response = table_summary(img, api_key, lang)
 
     # print(response.message.content)
-    alt = response.message.content
+    summary = response.message.content
 
-    org_alt = elem.GetAlt()
+    if not summary or summary == "":
+        print("[" + img + "] no summary generated")
+        return
 
-    if overwrite or not org_alt:
-        elem.SetAlt(alt)
+    attr_set = False
+    attr_dict = None
+    for index in reversed(range(elem.GetNumAttrObjects())):
+        attr_obj = elem.GetAttrObject(index)
+        if not attr_obj:
+            continue
+        attr_item = PdsDictionary(attr_obj.obj)
+        if attr_item.GetText("O") == "Table":
+            attr_dict = attr_item
+            break
+
+    if not attr_dict:
+        attr_dict = doc.CreateDictObject(False)
+
+    old_summary = attr_dict.GetText("Summary")
+    if overwrite or not old_summary:
+        print("[" + img + "] summary attribute updated")
+        attr_dict.PutString("Summary", summary)
+
 
 
 def browse_table_tags(
